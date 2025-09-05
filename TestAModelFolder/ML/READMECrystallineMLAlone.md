@@ -1,4 +1,4 @@
-CrystallineMLAlone.ipynb
+<h1>CrystallineMLAlone.ipynb</h1>
 
 This code requires that CrystallineFileLectureTests.ipynb has been run. As the data base is extremely small, the effects of overfitting and underfitting are very prone to happening. To test if a model performs as expected it should try to predict files that have not been used in the process of training and validation. As we can't extract too many files form the data base, the solution is to extract the n-th experiment, train a model with a given structure with all the other experiments, try to predict this isolated experiment (a blind prediction where we know what the output should be) and repeat the process for all experiments. To compare the results of different models please use the code files inside LTestVisualCheck
 
