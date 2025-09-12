@@ -12,7 +12,3 @@ Run the second folder if you want the same information using a metric similar to
 
 If you run the third one it will automatically combine the predictions for twelve models for each experiment in a single image. This way it is easier to spot the differences between models in a quick look. The code also orders them in order of complexity (each consecutive row has a bigger complexity) and number of augmentations (each consecutive column ahs more augmentation). This way the models are organized from simpler (top left) to more complex (bottom right).
 
- === WARNINGS FOR PREDICTWITHMODEL ===
-
-THE IMAGE COMBINATION CELL HAS BEEN CREATED TO EXPECT THE NAMES NAIF, SIMPLE, AVERAGE AND COMPLEX AND FOR THERE TO BE EXACTLY 12 MODELS. IF A DIFFERENT NAME IS USED OR THERE IS A DIFFERENT NUMBER OF MODELS, IT WILL NOT WORK. PLEASE CHANGE THE CODE ACCORDINGLY. 
-THE IMAGE COMBINATION CELL ALSO DOES NOT REMOVE THE TITLE OF EACH GRAPH AND DUE TO THEIR LENGTH THEY OVERLAP. APOLOGIES IN ADVANCE
