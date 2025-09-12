@@ -4,6 +4,7 @@ There are four folders each responsible for a different task. If you just want t
 Before using the code files inside the ML folders, the code files inside FileReadingStoring must have been run at least once. There is no manual work needed unless specified in this README. If the explanation here is not thorough enough, there are two showcase videos, one in english and the other in spanish available through this link to Google Drive (that may or may not be accesible after two or more years if the University of Zaragoza account is erased)
 ENGLISH: https://drive.google.com/file/d/1BeD356JblyybWiLf6zkPYyUM6mXkUMU8/view?usp=sharing
 SPANISH: https://drive.google.com/file/d/13WnhcQqzGiN4jHNVd4pMpd0Ootr1qKG6/view?usp=sharing
+Apologies for any typos or incorrections in all README files.
 ________________________________________________________________________________
 
 1.D3Files
@@ -37,7 +38,7 @@ After using them, a new folder called PredictionsFolder will get created. Inside
 
  === WARNINGS FOR PREDICTWITHMODEL ===
 
-1. IF YOU RUN THE CODE AND YOU GET AN ERROR SAYING THAT SOMETHING IS NOT DEFINED THERE IS A 99% CHANCE THAT TJE ISSUE IS THAT YOUR VERSION OF JUPYTERLAB DOESN'T HAVE DOWNLOADED THAT LIBRARY. ADDING A NEW CELL WRITING pip install _________ SHOULD FIX THE ISSUE. HOWEVER ASK CHATGPT FOR THE EXACT LINE pip install ______ THAT YOU NEED TO USE
+1. IF YOU RUN THE CODE AND YOU GET AN ERROR SAYING THAT SOMETHING IS NOT DEFINED THERE IS A 99% CHANCE THAT THE ISSUE IS THAT YOUR VERSION OF JUPYTERLAB DOESN'T HAVE DOWNLOADED THAT LIBRARY. ADDING A NEW CELL WRITING pip install _________ SHOULD FIX THE ISSUE. HOWEVER ASK CHATGPT FOR THE EXACT LINE pip install ______ THAT YOU NEED TO USE
 
 2. THE FILEREADING.IPYNBs FILES EXPECT THE STRUCTURE OF THE FLI FILES TO BE LIKE THIS FOR CRYSTALS:
 
