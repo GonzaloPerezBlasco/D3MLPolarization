@@ -1,9 +1,9 @@
 # D3MLPolarization
 
 There are four folders each responsible for a different task. If you just want to obtain the predicted polarization decay you only have to use PredictWithModel. If you want to add measurements (after a reactor cycle) to the data base then you also need to use CreateModels. In case you want to see how well a model performs, use TestAModelFolder. At the end of this README there is a very short summary to use it if you don't need to understand what is happening.
-Before using the code files inside the ML folders, the code files inside FileReadingStoring must have been run at least once. There is no manual work needed unless specified in this README. If the explanation here is not thorough enough, there are two showcase videos, one in english and the other in spanish available through this link to Google Drive (that may or may not be accesible after two or more years if the University of Zaragoza account is erased)
-ENGLISH: https://drive.google.com/file/d/1BeD356JblyybWiLf6zkPYyUM6mXkUMU8/view?usp=sharing
-SPANISH: https://drive.google.com/file/d/13WnhcQqzGiN4jHNVd4pMpd0Ootr1qKG6/view?usp=sharing
+Before using the code files inside the ML folders, the code files inside FileReadingStoring must have been run at least once. There is no manual work needed unless specified in this README. If the explanation here is not thorough enough, there are four showcase videos, two in english and the other two in spanish available through this link to Google Drive (that may or may not be accesible after two or more years if the University of Zaragoza account is erased). One, the "FULL_######" (in each language) contains a 50 minute explanation of the testing, creation and prediction algorithms while the other ("QUICKRUN_######") has a quick 5 minute showcase on how to use the predicion algorithm (using the best five models)
+https://drive.google.com/drive/folders/1Ie66vgY1gRkLbKFx2aOTFOGo_7HX-jmD?usp=sharing
+
 Apologies for any typos or incorrections in all README files.
 ________________________________________________________________________________
 
