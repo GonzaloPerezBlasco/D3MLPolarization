@@ -59,8 +59,7 @@ Some fli files have the wrong structure which means that they are not polarizati
 
 For evey fli file we will read the contents and try to find the header (two strings in two consecutive lines). This symbolizes the installation of a new polarizer cell. If there are numerical values before the first header, that means that the process of saving the file occured before swapping the cell. Those data rows will be skipped. A correct fli file will have the following structure:
 
-
-|--|--|--|--|--|--|--|--|--|--|--|--|
+|  |  |  |  |  |  |  |  |  |  |  |  |
 | polariser cell info | ge18004 | pressure/init. polar | 2.30 | 0.79 | initial date/time | 21/11/23 | @ | 12:45 |
 | analyser cell info  | sic1402 | pressure/init. polar | 2.00 | 0.79 | initial date/time | 21/11/23 | @ | 12:45 |
 | 40661 | 3.000 | 3.000 | 3.000 | 21/11/23 | 12:50:35 | 0.00 | 0.7890 | 0.0020 | 8.4795 | 0.0897 | 120.00 |
