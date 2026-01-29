@@ -1,42 +1,130 @@
-AmorphousFileLectureCreate.ipynb
+<h1>AmorphousFileLectureCreate.ipynb</h1> 
+
 Reads from D3Files all the files it is going to process
 
 Outputs the following folders and files:
 
-AmorphousLog_Reading_Creation.txt Logs all the prints and every step the code does. If you trust the code, it is irrelevant. If you don't trust it or want to change it then this txt file will tell you how each experiment file has been processed and where there might have been issues.
+1. **AmorphousLog\_Testing\_Creation.txt**
+Logs all the prints and every step the code does. If you trust the code, it is irrelevant. If you don't trust it or want to change it then this txt file will tell you how each experiment file has been processed and where there might have been issues.
 
-Amorphous_CellID Contains the Cell IDs found on all the files. Needed for the ML code.
 
-AmorphousPlotResults This folder will store the graphs of all the experiments that were accepted. Not needed for anything but it is nice to see the files that will be fed to the model. For each experiment you can find the following files:
+2. **Amorphous\_CellID**
+Contains the Cell IDs found on all the files. Needed for the ML code.
 
-3.1 {base_name}_ExtendedArea.png It shows the same pot and also the range y_min=mx+n-1.3N<y<mx+n+1.3N<y_max. The points outside the green area will be discarded as they are considered to be too off to be considered correct.
 
-AmorphousMLDataBase Contains the .txt files NECESSARY for the ML algorithm. There are two per experiment
-4.1 {base_name}.txt Contains DeltaTime (the time of the measurement measured from the first VALID polarization measurement), PolarizationD3, SoftPolarizationD3 (the polarization after using a Savitzky-Golay filter) and ErrPolarizationD3 (the uncertainty)
+3. **AmorphousPlotResults**
+This folder will store the graphs of all the experiments that were accepted. Not needed for anything but it is nice to see the files that will be fed to the model. For each experiment you can find the following files:
 
-4.2 {base_name}_Parameters.txt Contains the CellID, Pressure, LabPolarization (the polarization measured at the lab) and LabTimeCellID (the time when it was measured)
+    3.1 **{base\_name}\_ExtendedArea.png**
+It shows the same pot and also the range $y_{min} = m x + n - 1.3N < y < m x + n + 1.3N < y_{max}$. The points outside the green area will be discarded as they are considered to be too off to be considered correct.
 
-AmorphousFailuresTest Contains the plots 3.2 and 3.4 but for the experiments that failed the overall decreasing test. Check them if you can to see if any of your experiments has been placed there by mistake
 
-AmorphousDataBase Contains all the .fli files that were attempted to be read
+4. **AmorphousMLDataBase**
+Contains the .txt files NECESSARY for the ML algorithm. There are two per experiment
 
-AmorphousBadFiles Contains all the .fli separated in experiment sets folders that were rejected (not enough points, negative polarizations, etc.)
+    4.1 **{base\_name}.txt** 
+Contains DeltaTime (the time of the measurement measured from the first VALID polarization measurement), PolarizationD3, SoftPolarizationD3 (the polarization after using a Savitzky-Golay filter) and ErrPolarizationD3 (the uncertainty)
 
-Process it follows:
+    4.2 **{base\_name}\_Parameters.txt**
+Contains the CellID, Pressure, LabPolarization (the polarization measured at the lab) and LabTimeCellID (the time when it was measured)
 
-REMOVAL OF PREVIOUS ITERATIONS To avoid leaks and duplications, all files are erased before running the code file
+5. **AmorphousDataBase**
+Contains all the .fli files that were attempted to be read
 
-ZIP FOLDER TREATMENT The code will take all the zip files, extract them, remove duplicates using the name AND hash sha256.
 
-SEPARATION OF FLI FILES ACCORDING TO EXPERIMENTS
+6. **AmorphousBadFiles**
+Contains all the .fli separated in experiment sets folders that were rejected (not enough points, negative polarizations, etc.)
 
-Some fli files have the wrong structure (they are not polarization measurementes) and if they are polarization files they can have more than one experiment per file. For evey fli file we will read the contents and try to find the header (two strings in two consecutive lines). This symbolizes the beginning of an experiment If there are numerical values before the first header, that means that the process of saving the file occured before changing something of the experiment. These data rows will be skipped A correct fli file will have the following structure: polariser cell info ge18004 pressure/init. polar 2.30 0.79 initial date/time 21 11 23 @ 12:45 analyser cell info sic1402 pressure/init. polar 2.00 0.79 initial date/time 21 11 23 @ 12:45 40661 3.000 3.000 3.000 21/11/23 12:50:35 0.00 0.7890 0.0020 8.4795 0.0897 120.00 40662 3.000 3.000 3.000 21/11/23 12:54:43 0.00 0.7851 0.0020 8.3048 0.0867 120.00 ...
 
-Which corresponds to the following information: String:'polariser cell info', PolariserID, String:'pressure/init. polar', PolariserPressure(unknown units), InitialLabPolarization, String:'date/time', Day, Month, Year, String:'@', Hour:Minute String:'analyser cell info', AnalyserID, String:'pressure/init. polar', AnalyserPressure(unknown units), InitialLabPolarization(always the same as the polariser cell), String:'date/time', Day, Month, Year, String:'@', Hour:Minute Measurement Number, First Miller Index, Second Miller Index, Third Miller Index, Date Of Measurement, Time Of Measurement, Unkown Number, Polarization, Polarization uncertainty, Flipping Ratio, FlippingRatio Uncertainty, Duration of the measurement
+_________________________________________________________________________________________
 
-D3 uses two polariser cells, one between the reactor and the sample and a second between the sample and the sensor. The first one guarantees that only neutrons with the correct spin direction interacts with the sample. The second one guarantees that only the neutrons that have unchanged spin direction after interacting with the sample are detected by the sensor. The same happens with the analyser cells. The reason why this values are smaller than the ones measured with crystals or crystalline powders is that this polarizations are the multiplication of two polarizations. We have considered that temperature is not a relevant factor and the flipping ratio has no new information that polarization alrady posseses. First, the code will first locate the first header (ignoring eveything before) and save all the data afterwards (until the next header or end of the document) in a file with the suffix Array_{i} (i is the number of headers already processed in that fli file). Second it will try to find a combination of the strings with polariser and anlyser (there have been files where one comes before the other, others the other way around and some where the lab polarization. changes in the same cell in mere minutes. As there is not necessarily an absolute order, the code has become flexible to fix these issues) Third, it will save the headers as a file with the suffix Parameters. Fourth, the header row and the columns of Measurement Number, Unkown Number, Flipping Ratio, FlippingRatio Uncertainty and Time Between Measurements will be erased Fifth, not all data from all Miller Index combinations are polarization measurements. Even some of the ones that are polarization measurements are tampered (playing with magnetic fields for example). This means that there needs to be a way to select the correct combination. For starters, irrational Miller indices are not used for measurements with the samples (they need to be discarded) The integer Miller indices combination will be put to the test by all the functions defined before. For evey succesful experiment we will output: Image: "PolarizationD3_{folder_name}{DD}/{MM}/{YY}{i}MillerIndex{PrettyCombination}ExtendedArea.png" in AmorphousPlotResults. Shows the plot with the extended area with the raw data Txt: "PolarizationD3{folder_name}{DD}/{MM}/{YY}{i}MillerIndex{PrettyCombination}.txt" in AmorphousMLDataBase. It contains the four data columns (DeltaTime, PolarizationD3, SoftPolarizationD3, ErrPolarizationD3) Txt: "PolarizationD3_{folder_name}{DD}/{MM}/{YY}{i}MillerIndex{PrettyCombination}_Parameters.txt" in AmorphousMLDataBase. It contains the parameters (CellID, Pressure, LabPolarization, LabTime) These plots are not necessary but are saved for the user to know what all the files look like. The files that are wrong or useless when all is done are the folowing: Txt: "{folder_name}Arrays{i}.txt" in SeparatedFolder/{folder_name}. It still has the header and useless columns. It is the fli file of evey chunk, of every recorded experiment (correct or incorrect) Folder: "BadTest" contains all the graphs of the data sets that were considered not worthy but had more points that the ones saved. Check them if your experiment was not properly added.
+## Explanations
 
-No scores are obtained to say if a file is correct or not Seventh, it will try each Miller index combination for a set i value, apply a filter, and return filtered df + PrettyCombination. it will only add the filtered column if enough points & data changes significantly. If it doesn't change too much, the column PolarizationD3 will be duplicated with the new name Eight, it repeats the process of obtaining the area in mx+n-N < y < mx+n+N where 75% of the points are inside the area. It also multiplies the value of N by a factor AcceptableMultiplier and erases all points outside this bigger area. The enlarged area will be plotted and saved in PlotResults only for the normal data (not the softened one as the files were already adequately saved and filtered without the Savitzky–Golay filter). As uncertainties are clearly underestimated I tried to make them reasonable (looking at the dispersion of the points it is clear there is systematic uncertainties. Under the hypothesis that the polarization curve should be a soft curve (at least C^1) we will try to use χ^2 to add a provisional uncertainty margin fitting to a linear expression. This is a very inaccurate uncertainty increase but it is an improvement of the underestimated uncertainties (and the lack of ways to quantify the systematic uncertainty sources)
+Some parts of the code might use data from different sessions. It is safer to erase them and create all files from scratch everytime. This is not a big deal because this code file should only be run once unless the data base changes.
+
+Some experiments did not pass the filtering methods of the previous functions despite looking very promising. Also, some experiments were not adequate yet they passed all of the filtering process. That is why we will store the names of those files manually.
+The code will take all zipped folders from the folder _D3Files_ and prepare them to get their .fli files extracted.
+
+First, it will check if there are duplicate zip folders. To check it it will compare the folder name and the hash sha256. Duplicate folders will be erased. For more information about hash sha256 check for example:
+>Wikipedia contributors. (2026, January 2). SHA-2. In Wikipedia, The Free Encyclopedia. Retrieved 10:49, January 17, 2026, from https://en.wikipedia.org/w/index.php?title=SHA-2&oldid=1330753870
+
+Second, it will copy the contents of the zipped folders and create a new folder with the name of the experiment inside _D3Files_. No more zipped folders are erased and information gets duplicated.
+
+Third, it will try to find all .fli files inside all the unzipped folders whether if they come from a zipped file or not. It will then send them to the newly created folder _AmorphousDataBase_. If, for each experiment proposal there are more than one .fli files, they get a numeric suffix (\_1, \_2,...) to distinguish them. Afterwards, all unzipped folders get erased leaving behind only the non-duplicated zipped folders.
+
+Note: All unzipped folders in D3Files will be explored, however they will get erased at the end of the pipeline. If you want them to persist for future runs of the code, they should be zipped first. **For ILL users, when navigating the ILL Cloud, the easiest way to prepare the zip files is to download the _processed_ folder for each experiment proposal. The code is "smart" enough to only process .fli files with polarization information. Therefore, there is no need to manually prepare anything.**
+
+
+Some fli files have the wrong structure which means that they are not polarization measurements and if they are polarization files they may have used more than one polarization cell. Therefore, we need to remove all the non-polarization sets of data and separate the good fli files depending of the type of polarization cell they used.
+
+For evey fli file we will read the contents and try to find the header (two strings in two consecutive lines). This symbolizes the installation of a new polarizer cell. If there are numerical values before the first header, that means that the process of saving the file occured before swapping the cell. Those data rows will be skipped. A correct fli file will have the following structure:
+
+|  |  |  |  |  |  |  |  |  |  |  |  |
+|--|--|--|--|--|--|--|--|--|--|--|--|
+| polariser cell info | ge18004 | pressure/init. polar | 2.30 | 0.79 | initial date/time | 21/11/23 | @ | 12:45 |
+| analyser cell info  | sic1402 | pressure/init. polar | 2.00 | 0.79 | initial date/time | 21/11/23 | @ | 12:45 |
+| 40661 | 3.000 | 3.000 | 3.000 | 21/11/23 | 12:50:35 | 0.00 | 0.7890 | 0.0020 | 8.4795 | 0.0897 | 120.00 |
+| 40662 | 3.000 | 3.000 | 3.000 | 21/11/23 | 12:54:43 | 0.00 | 0.7851 | 0.0020 | 8.3048 | 0.0867 | 120.00 |
+|  ...  |       |       |       |          |          |      |        |        |        |        |        |
+
+Which corresponds to the following information for the first two rows:
+1. 'polariser cell info'/'analyser cell info' (str): Log of the installation of the first and second polariser cells
+2. 'PolariserID' (str): A string with the type of cell used
+3. 'pressure/init. polar' (str): A string to introduce the $^\mathrm{3}$He gas pressure and the polarization measured at the creation lab.
+4. 'PolariserPressure' (float): $^\mathrm{3}$He gas pressure in some units
+5. 'InitialLabPolarization' (float): Polarization measured at the creation lab
+6. 'initial date/time' (str): A string that introduces the day, month and year and the hour and minutes.
+7. 'Date' (str): A string with the information DD/MM/YY
+8. '@' (str): A string to separate date and time
+9. 'time' (str): A string with the information HH:MM
+
+And for the rest of the rows:
+1. 'Measurement number' (int): The number index of the measurement.
+2. 'First\_Miller\_Index' (float): The first Miller index of the crystal. Polarization is measured using a known Si Bragg crystal. For the source of the origin of the Si crystal see:
+>Stunault, Anne & Vial, S & Pusztai, Laszlo & Cuello, Gabriel & Temleitner, László. (2016). Structure of hydrogenous liquids: separation of coherent and incoherent cross sections using polarised neutrons. Journal of Physics: Conference Series. 711. 012003. 10.1088/1742-6596/711/1/012003. 
+3. 'Second\_Miller\_Index' (float)
+4. 'Third\_Miller\_Index' (float):
+5. 'Date' (str): A string with the information DD/MM/YY of that measurement
+6. 'time' (str): A string with the information HH:MM:SS of that measurement
+7. Unknown float, maybe Temperature
+8. 'D3Polarization' (float): A float with the polarization measurement
+9. 'ErrD3Polarization' (float): A float with the uncertainty of that polarization measurement
+10. 'FlippingRatio' (float): The flipping ratio. Given either the flipping ratio or the polarization value, the other one is fully determined. Therefore, only one is needed and that is why we don´t work with the flipping ratio
+11. 'ErrFlippingRatio' (float): The uncertainty of the flipping ratio
+12. 'Elapsed time' (float): It is the time used to obtain the measurement (integration of the beam over that number of seconds)
+
+Temperature did not seem to have an effect on the decay. Therefore, it has been eliminated in this code cell. Here is a summary of what the code does:
+
+1. The code will go through the .fli files and find all combinations of consecutive rows with 'polariser cell info' and 'analyser cell info'. It doesn´t care about the order which makes the code more robust. We will consider that a polariser cell has been properly installed whrn both of these rows are present and that the cell has been changed once a new set of polariser and analyser rows are encountered. At the moment it ignores the experiments that use the 'magical box' as we are not sure if they are experiments compatible with the ones studied here
+2. For evey cell change, a new .fli file is created storing all the information including both polariser and analyser rows and the measured data rows. Also, all cell IDs are recorded
+3. For all .fli files the code now will:
+    
+- Remove unwanted rows
+- Extract data form the header rows (polariser row and analyser row)
+- Remove unwanted columns
+- Set a time reference with the first measurement row. All other time values get referenced with respect to this moment in time and converted into seconds.
+- Ignore all Miller index combinations that are not integers
+- Run through all Miller index combinations until one passes all the filters defined in previous code cells
+- Plot the succesful experiments
+- Save two files for each experiment. One with the header rows and another one with just the numeric rows (with a new header that explains what each column has)
+
+For every succesful experiment we will output:
+1. Image:  "PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_ExtendedArea.png" in AmorphousPlotResults. Shows the plot with the extended area with the raw data
+2. Txt:    "PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}.txt" in AmorphousMLDataBase. It contains the four data columns (DeltaTime, PolarizationD3, SoftPolarizationD3, ErrPolarizationD3)
+3. Txt:    "PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_Parameters.txt" in AmorphousMLDataBase. It contains the parameters (CellID, Pressure, LabPolarization, LabTime)
+
+These plots are not necessary but are saved for the user to know what all the files look like.
+The files that are wrong or useless when all is done are the folowing:
+1. Txt:    "{folder\_name}\_Arrays\_{i}.txt" in SeparatedFolder/{folder\_name}. It still has the header and useless columns. It is the fli file of evey chunk, of every recorded experiment (correct or incorrect)
+2. Folder: "BadTest" contains all the graphs of the data sets that were considered not worthy but had more points that the ones saved. Check them if your experiment was not properly added
+
+Finally, it erases all intermediate files and prepares the remaining ones for the ML pipeline
+
+1. Removes all .fli files that have been created.
+2. Removes empty folders
+3. Collects all unique polariser–analyser ID pairs
+ 
+As a result, the only useful files are _AmorphousPolariserAndAnalyser\_IDs.txt_ and the folder _AmorphousMLDataBase_
 
 CellID SAVING It will safely store in a txt file all the polariser and analyser cell ids so that the code in ML can use them
 
