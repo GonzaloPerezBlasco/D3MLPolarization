@@ -3,7 +3,7 @@
 There are four folders each responsible for a different task. If you just want to obtain the predicted polarization decay you only have to use PredictWithModel. If you want to add measurements (after a reactor cycle) to the data base then you also need to use CreateModels. In case you want to see how well a model performs, use TestAModelFolder. At the end of this README there is a very short summary to use it if you don't need to understand what is happening.
 In this presentation you can see how to use the programs:
 
-https://docs.google.com/presentation/d/1BqC0SIO63Y6Gf9Ebw5jM6ON_GJMAgEgx/edit?usp=sharing&ouid=103533666238364010404&rtpof=true&sd=true
+[https://docs.google.com/presentation/d/1BqC0SIO63Y6Gf9Ebw5jM6ON_GJMAgEgx/edit?usp=sharing&ouid=103533666238364010404&rtpof=true&sd=true](https://docs.google.com/presentation/d/1ej2dq06_DOG1woB3bfhDSEdd2fq4od1S/edit?usp=sharing&ouid=103533666238364010404&rtpof=true&sd=true)
 
 Apologies for any typos or incorrections in all README files.
 ________________________________________________________________________________
