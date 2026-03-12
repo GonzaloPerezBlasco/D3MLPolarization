@@ -1,6 +1,9 @@
 # D3MLPolarization
 
-This README IS OUTDATED. THE GOOGLE DRIVE DOCS ARE UP TO DATE
+This README IS OUTDATED. THE GOOGLE DRIVE DOCS ARE UP TO DATE.
+Proper explanations that work well with help() in functions is still left. The rest should be done.
+
+
 There are four folders each responsible for a different task. If you just want to obtain the predicted polarization decay you only have to use PredictWithModel. If you want to add measurements (after a reactor cycle) to the data base then you also need to use CreateModels. In case you want to see how well a model performs, use TestAModelFolder. At the end of this README there is a very short summary to use it if you don't need to understand what is happening.
 In this presentation you can see how to use the programs:
 
