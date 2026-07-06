@@ -1,57 +1,62 @@
-<h1>CrystalineFileLectureTests.ipynb</h1>
+<h1>CrystallineFileLectureTests.ipynb</h1>
 
-Reads from D3Files all the files it is going to process
+<h2>Objective of program:</h2>
 
-Outputs the following folders and files:
+It takes all known Polarization files, extracts the files used in the crystalline configuration and processes them to be used by *TestAModelFolder/ML/CrystalineMLAlone.ipynb*
 
-1. **CrystallineLog\_Reading\_Creation.txt**
+<h2>Input:</h2>
+
+It looks in the folder *TestAModelFolder/FileReadingStoring/D3Files* for zipped files with .fli files directly downloaded from the ILL Cloud (just download the entire experiment folder, zipped)
+<h2>Output: </h2>
+
+1. **CrystallineBadFiles**
+Contains all the .fli separated in experiment sets folders that were rejected (not enough points, negative polarizations, etc.)
+
+2. **CrystallineDataBase**
+Contains all the .fli files that were attempted to be read
+
+3. **CrystallineMLDataBase**
+Contains the .txt files **NECESSARY** for the ML algorithm. There are two per experiment
+
+    3.1 **{base\_name}.txt** 
+Contains DeltaTime (the time of the measurement measured from the first VALID polarization measurement), PolarizationD3, SoftPolarizationD3 (the polarization after using a Savitzky-Golay filter) and ErrPolarizationD3 (the uncertainty)
+
+    3.2 **{base\_name}\_Parameters.txt**
+Contains the CellID, Pressure, LabPolarization (the polarization measured at the lab) and LabTimeCellID (the time when it was measured)
+
+4. **CrystallinephousPlotResults**
+This folder will store the graphs of all the experiments that were accepted. Not needed for anything but it is nice to see the files that will be fed to the model. For each experiment you can find the following files:
+
+    4.1 **Crystalline\_Reading\_Summary.txt** Shows the Score of each experiment. If you use the default criteria for deciding if a file is adequate (a.k.a method FilteringMethodInt = 12) then all files under 1.4 are rejected and the files that have been forcefully accepted or rejected appear as well indicated here. **IF YOU RECKON AN EXPERIMENT SHOULD BE ACCEPTED DESPITE BEING SHOWN HERE AS REJECTED PLEASE FIND THE LIST force\_reject\_files AND ADD YOUR ECPERIMENT USING THE SAME STRUCTURE. IDEM FOR ACCEPTED FILES THAT SHOULD NOT BE ACCEPTED.** As a side note, in order to know visullay if a file is good or not, open the associated graph and just check that it doesn't do any funky business (see the examples already present to get a feel on what the word "funky" means)
+
+    4.2 **{base\_name}\_N\_{N}.png** 
+It shows the values of the experiment in black, a linear fit in blue and the area needed for 75% of the points to be inside the rectangular region (the area inside $y_{min} = m x + n - N < y < m x + n + N < y_{max}$). Here you can find a good estimate on how good the overall decreasing tendencies are.
+
+    4.3 **{base\_name}\_ExtendedArea.png** 
+It shows the same pot and also the range $y_{min} = m x + n - 1.3N < y < m x + n + 1.3N < y_{max}$. The points outside the green area will be discarded as they are considered to be too off to be considered correct.
+
+    4.4 **{base\_name}\_Derivatives.png**
+It shows the number of negative slopes between points and how steep they are
+
+5. **CrystallineFailuresTest**
+Contains the plots 4.2 and 4.4 but for the experiments that failed the overall decreasing test. Check them if you can to see if any of your experiments has been placed there by mistake
+
+6. **CrystallineSeparatedFolder**
+Unzipped folders. Nothing of value for the user of the code.
+
+7. **Crystalline\_CellID.txt**
+Contains the Cell IDs found on all the files. Needed for the ML code.
+
+8. **CrystallineLog\_Reading\_Creation.txt**
 Logs all the prints and every step the code does. If you trust the code, it is irrelevant. If you don't trust it or want to change it then this txt file will tell you how each experiment file has been processed and where there might have been issues.
 
 
-2. **Crystalline\_CellID.txt**
-Contains the Cell IDs found on all the files. Needed for the ML code.
 
-
-3. **CrystallinephousPlotResults**
-This folder will store the graphs of all the experiments that were accepted. Not needed for anything but it is nice to see the files that will be fed to the model. For each experiment you can find the following files:
-
-    3.1 **Crystalline\_Reading\_Summary.txt** Shows the Score of each experiment. If you use the default criteria for deciding if a file is adequate (a.k.a method FilteringMethodInt = 12) then all files under 1.4 are rejected and the files that have been forcefully accepted or rejected appear as well indicated here. **IF YOU RECKON AN EXPERIMENT SHOULD BE ACCEPTED DESPITE BEING SHOWN HERE AS REJECTED PLEASE FIND THE LIST force\_reject\_files AND ADD YOUR ECPERIMENT USING THE SAME STRUCTURE. IDEM FOR ACCEPTED FILES THAT SHOULD NOT BE ACCEPTED.** As a side note, in order to know visullay if a file is good or not, open the associated graph and just check that it doesn't do any funky business (see the examples already present to get a feel on what the word "funky" means)
-
-    3.2 **{base\_name}\_N\_{N}.png** 
-It shows the values of the experiment in black, a linear fit in blue and the area needed for 75% of the points to be inside the rectangular region (the area inside $y_{min} = m x + n - N < y < m x + n + N < y_{max}$). Here you can find a good estimate on how good the overall decreasing tendencies are.
-
-    3.3 **{base\_name}\_ExtendedArea.png** 
-It shows the same pot and also the range $y_{min} = m x + n - 1.3N < y < m x + n + 1.3N < y_{max}$. The points outside the green area will be discarded as they are considered to be too off to be considered correct.
-
-    3.4 **{base\_name}\_Derivatives.png**
-It shows the number of negative slopes between points and how steep they are
-
-
-4. CrystallineMLDataBase
-Contains the .txt files **NECESSARY** for the ML algorithm. There are two per experiment
-
-    4.1 **{base\_name}.txt** 
-Contains DeltaTime (the time of the measurement measured from the first VALID polarization measurement), PolarizationD3, SoftPolarizationD3 (the polarization after using a Savitzky-Golay filter) and ErrPolarizationD3 (the uncertainty)
-
-    4.2 **{base\_name}\_Parameters.txt**
-Contains the CellID, Pressure, LabPolarization (the polarization measured at the lab) and LabTimeCellID (the time when it was measured)
-
-
-5. **CrystallineFailuresTest**
-Contains the plots 3.2 and 3.4 but for the experiments that failed the overall decreasing test. Check them if you can to see if any of your experiments has been placed there by mistake
-
-
-
-6. **CrystallineDataBase**
-Contains all the .fli files that were attempted to be read
-
-
-7. **CrystallineBadFiles**
-Contains all the .fli separated in experiment sets folders that were rejected (not enough points, negative polarizations, etc.)
 
 
 _________________________________________________________________________________________
 
+## Explanations
 
 Some parts of the code might use data from different sessions. It is safer to erase them and create all files from scratch everytime. This is not a big deal because this code file should only be run once unless the data base changes. It also clears all previous ML predictions to avoid mixing up information between experiments
 
@@ -77,8 +82,6 @@ For evey fli file we will read the contents and try to find the header (two stri
 | 47391 | 4.000 | 0.000 | 1.000 | 18/09/23 | 06:20:44 | 155.03 | +z | +z | 0.8391 | 0.0156 | 11.4270 | 1.2031 | 120.00 |
 | 37392 | 4.000 | 0.000 | 1.000 | 18/09/23 | 06:26:49 | 155.05 | +x | +x | 0.8255 | 0.0110 | 10.4610 | 0.7211 | 300.00 |
 |  ...  |       |       |       |          |          |      |        |        |        |        |        | | |
-
-
 
 
 
@@ -128,25 +131,6 @@ Temperature did not seem to have an effect on the decay. Therefore, it has been 
 - Plot the succesful experiments
 - Save two files for each experiment. One with the header rows and another one with just the numeric rows (with a new header that explains what each column has)
 
-For every succesful experiment we will output:
-1. Image:  **"PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_Multiplier={Multiplier}.png"** in PlotResults. Shows the plot with the extended area with the raw data
-2. Image: **"PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_Multiplier={Multiplier}\_Soft.png"** in PlotResults. Shows the plot with the extended area with the filtered data
-3. Image: **"PolarizationD3\_{folder_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_Filtered.txt\_plot\_Derivatives.png"** in PlotResults. Shows the evolution of the "derivatives". I apologize for the hideous names. Unless it results in a fatal error, I am scared to change the code.
-4. Image: **"PolarizationD3\_{folder_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex_{PrettyCombination}\_Filtered.txt\_N\_{N}\_ManualInterval.png"** in PlotResults. Shows the plot with the non-exteded area
-5. Txt: **"PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}.txt"** in MLDataBase. It contains the four data columns (DeltaTime, PolarizationD3, SoftPolarizationD3, ErrPolarizationD3)
-6. Txt: **"PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_Parameters.txt"** in MLDataBase. It contains the parameters (CellID, Pressure, LabPolarization, LabTime)
-
-
-The plots are not necessary but are saved for the user to know what all the files look like. The txt files are fundamental for the rest of the pipeline. 
-The files that are wrong or useless when all is done are the folowing. They are kept for  debug purposes (to see files with differents structures, why they fail,etc).
-
-1. Txt: **"{folder\_name}\_Arrays\_{i}.txt"** in SeparatedFolder/{folder_name}. It still has the header and useless columns. It is the fli file of evey chunk, of every recorded experiment (correct or incorrect)
-2. Txt: **"PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}.txt"** in SeparatedFolder/{folder_name}. It is the same as the one in MLDataBase (a duplicate)
-3. Image: **"PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}.png"** in SeparatedFolder/{folder_name}. It plots (with error bars) PolarizationD3
-4. Image: **"PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_Combined.png"** in SeparatedFolder/{folder_name}. It plots (with error bars) both PolarizationD3 and SoftPolarizationD3
-5. Image: **"PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_Softened.png"** in SeparatedFolder/{folder_name}. It plots (with error bars) SoftPolarizationD3
-6. Folder: **"FailuresTest"** contains all the graphs of the data sets that were considered not worthy but had more points that the ones saved. Check them if your experiment was not properly added
-7. Folder: **"DataBase"** has the raw fli files. Once the code has been used they are no longer important (if you don't find the folder I may have added a line of code to erase it. Sorry in advance for any inconveniences) 
 
 Finally, it erases all intermediate files and prepares the remaining ones for the ML pipeline
 
@@ -154,4 +138,5 @@ Finally, it erases all intermediate files and prepares the remaining ones for th
 2. Removes empty folders
 3. Collects all unique polariser–analyser ID pairs
  
-As a result, the only useful files are _Crystalline_CellID.txt_ and the folder _CrystallineMLDataBase_
+As a result, the only useful files are _Crystalline_CellID.txt_ and the folder _CrystallineMLDataBase_. However, the next notebook that needs to run will automatically read them from this folder so **DO NOT MOVE THIS FILE AND FOLDER**. 
+<h3>After running this notebook please go to TestAModelFolder\ML and run CrystallineMLAlone.ipynb</h3>
