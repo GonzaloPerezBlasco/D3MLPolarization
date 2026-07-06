@@ -1,16 +1,27 @@
 <h1>AmorphousFileLectureCreate.ipynb</h1> 
 
-Reads from D3Files all the files it is going to process
+<h2>Objective of program:</h2>
 
-Outputs the following folders and files:
+It takes all known Polarization files, extracts the files used in the amorphous configuration and processes them to be used by *CreateModels/ML/CreateSaveModelAmorphous.ipynb*
 
-1. **AmorphousLog_Reading\_Creation.txt**
-Logs all the prints and every step the code does. If you trust the code, it is irrelevant. If you don't trust it or want to change it then this txt file will tell you how each experiment file has been processed and where there might have been issues.
+<h2>Input:</h2>
+
+It looks in the folder *CreateModels/FileReadingStoring/D3Files* for zipped files with .fli files directly downloaded from the ILL Cloud (just download the entire experiment folder, zipped)
+
+<h2>Output: </h2>
+
+1. **AmorphousBadFiles**
+Contains all the .fli separated in experiment sets folders that were rejected (not enough points, negative polarizations, etc.)
 
 
-2. **Amorphous_CellID**
-Contains the Cell IDs found on all the files. Needed for the ML code.
+2. **AmorphousMLDataBase**
+Contains the .txt files NECESSARY for the ML algorithm. There are two per experiment. No manual manipulation is needed.
 
+    2.1 **{base\_name}.txt** 
+Contains DeltaTime (the time of the measurement measured from the first VALID polarization measurement), PolarizationD3, SoftPolarizationD3 (the polarization after using a Savitzky-Golay filter) and ErrPolarizationD3 (the uncertainty)
+
+    2.2 **{base\_name}\_Parameters.txt**
+Contains the CellID, Pressure, LabPolarization (the polarization measured at the lab) and LabTimeCellID (the time when it was measured)
 
 3. **AmorphousPlotResults**
 This folder will store the graphs of all the experiments that were accepted. Not needed for anything but it is nice to see the files that will be fed to the model. For each experiment you can find the following files:
@@ -19,21 +30,14 @@ This folder will store the graphs of all the experiments that were accepted. Not
 It shows the same pot and also the range $y_{min} = m x + n - 1.3N < y < m x + n + 1.3N <y_{max}$. The points outside the green area will be discarded as they are considered to be too off to be considered correct.
 
 
-4. **AmorphousMLDataBase**
-Contains the .txt files NECESSARY for the ML algorithm. There are two per experiment
-
-    4.1 **{base\_name}.txt** 
-Contains DeltaTime (the time of the measurement measured from the first VALID polarization measurement), PolarizationD3, SoftPolarizationD3 (the polarization after using a Savitzky-Golay filter) and ErrPolarizationD3 (the uncertainty)
-
-    4.2 **{base\_name}\_Parameters.txt**
-Contains the CellID, Pressure, LabPolarization (the polarization measured at the lab) and LabTimeCellID (the time when it was measured)
-
-5. **AmorphousDataBase**
-Contains all the .fli files that were attempted to be read
+4. **AmorphousLog_Reading\_Creation.txt**
+Logs all the prints and every step the code does. If you trust the code, it is irrelevant. If you don't trust it or want to change it then this txt file will tell you how each experiment file has been processed and where there might have been issues.
 
 
-6. **AmorphousBadFiles**
-Contains all the .fli separated in experiment sets folders that were rejected (not enough points, negative polarizations, etc.)
+5. **AmorphousPolariserAndAnalyser_IDs.txt**
+Contains the Cell IDs found on all the files. Needed for the ML code.
+
+
 
 
 _________________________________________________________________________________________
@@ -108,15 +112,6 @@ Temperature did not seem to have an effect on the decay. Therefore, it has been 
 - Plot the succesful experiments
 - Save two files for each experiment. One with the header rows and another one with just the numeric rows (with a new header that explains what each column has)
 
-For every succesful experiment we will output:
-1. Image:  "PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_ExtendedArea.png" in AmorphousPlotResults. Shows the plot with the extended area with the raw data
-2. Txt:    "PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}.txt" in AmorphousMLDataBase. It contains the four data columns (DeltaTime, PolarizationD3, SoftPolarizationD3, ErrPolarizationD3)
-3. Txt:    "PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_Parameters.txt" in AmorphousMLDataBase. It contains the parameters (CellID, Pressure, LabPolarization, LabTime)
-
-These plots are not necessary but are saved for the user to know what all the files look like.
-The files that are wrong or useless when all is done are the folowing:
-1. Txt:    "{folder_name}\_Arrays\_{i}.txt" in SeparatedFolder/{folder\_name}. It still has the header and useless columns. It is the fli file of evey chunk, of every recorded experiment (correct or incorrect)
-2. Folder: "BadTest" contains all the graphs of the data sets that were considered not worthy but had more points that the ones saved. Check them if your experiment was not properly added
 
 Finally, it erases all intermediate files and prepares the remaining ones for the ML pipeline
 
@@ -124,12 +119,5 @@ Finally, it erases all intermediate files and prepares the remaining ones for th
 2. Removes empty folders
 3. Collects all unique polariser–analyser ID pairs
  
-As a result, the only useful files are _AmorphousPolariserAndAnalyser\_IDs.txt_ and the folder _AmorphousMLDataBase_  
-    
-4. CellID SAVING
-It will safely store in a txt file all the polariser and analyser cell ids so that the code in ML can use them
-
-5. DUPLICATION REMOVAL
-It will check if the files created for the ML algorithm are duplicates and erases them in that case
-
-
+As a result, the only useful files are _AmorphousPolariserAndAnalyser\_IDs.txt_ and the folder _AmorphousMLDataBase_.However, the next notebook that needs to run will automatically read them from this folder so **DO NOT MOVE THIS FILE AND FOLDER**. 
+<h3>After running this notebook please go to CreateModels\ML and run CreateSaveModelAmorphous.ipynb</h3>
