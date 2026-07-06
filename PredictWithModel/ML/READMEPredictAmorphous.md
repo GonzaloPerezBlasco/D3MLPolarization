@@ -1,7 +1,49 @@
 <h1>PredictAmorphous.ipynb </h1>
 
-It takes the files from AmorphousFileLecturePredict.ipynb and predicts with them. There is now only one function that can be used for prediction, Predict.
-**IMPORTANT, IN THE FOLDER AmorphousModels YOU HAVE TO MANUALLY PASTE THE FOLDERS WITH THE MODELS. IT IS A MANUAL PROCESS. THE REST OF THE PROCESS SHOULD BE AUTOMATED EXCEPT FOR THE TIME CONDITIONS THAT ARE ASKED TO THE USER**
+<h2>Objective of program:</h2>
+
+It takes the files from *AmorphousToPredictFiles* and predicts with them. There is now only one function that can be used for prediction called *Predict*.
+**IMPORTANT, IN THE FOLDER AmorphousModels YOU HAVE TO MANUALLY PASTE THE FOLDERS WITH THE MODELS. THE BEST MODELS UNTIL 2025 ARE ALREADY LOADED. IT IS A MANUAL PROCESS. THE REST OF THE PROCESS SHOULD BE AUTOMATED EXCEPT FOR THE TIME CONDITIONS THAT ARE ASKED TO THE USER**
+
+<h2>Input:</h2>
+
+1. **AmorphousToPredictFiles**
+For each Complexity and each num_augmentations (a.k.a, for each model structure and data organization) a folder is created.
+
+
+    1.1 **Model\_{Complexity}\_{num\_augmentations}**
+**THESE ARE THE FOLDERS YOU NEED TO COPY AND PASTE INSIDE THE PREDICTING CODE FOLDERS. THE WHOLE FOLDER NOT JUST THE CONTENTS**
+Inside these folders you have the entire model and the scalers all ready to use for prediction. 
+Note: The corrections are dependent on the static parameters and not the model or the training routine. Therefore this models will not give you the corrected predictions. (Do not worry, in the prediction files these corrections are automatically done if you don't change the flag that activates them)
+ 
+       1.1.1 Model_{Complexity}_{num_augmentations}.keras The model file
+
+       1.1.2 scaler_static_{Complexity}_{num_augmentations}_PolarizationD3.pkl. The scaler for the static parameters (initial and final polarizations included) used in this isolated-experiment iteration
+
+       1.1.3 scaler_time_{Complexity}_{num_augmentations}_PolarizationD3.pkl. The scaler for the time evolution used in this isolated-experiment iteration
+
+       1.1.4 scaler_y_{Complexity}_{num_augmentations}.pkl. The scaler for the polarization values used in this isolated-experiment iteration
+
+2. **Initial time**. A number the code will demand after running the cells. If you want to start doing predictions 36000 seconds before the first measurement, type -36000. If you want it to start an hour later, type +3600. It accepts any integer number
+3. **Final time**. A number the code will demand after running the cells. If you want to finish doing predictions 72000 seconds after the last measurement, type +72000. If you want to predict until two hours before the final experimental measurement, type -7200. It accepts any integer number
+4. **Elapsed time**. A number the code will demand after running the cells. It determines the time interval between predictions.
+
+5. **AbsoluteTimes.txt**
+It is only created if you use Predict (not with PredictWithPolarizationTimeReference). It stores for each experiment (and model, if I have time I will remove those duplications) the name of the experiment, the time where the first polarization measurement was recorded (in an absolute format like "2023-12-08 13:06:39") and the time value that was used for the Predict function (it is just DiffractogramAbsoluteTime that was added so there is a txt file with all the information needed to change from time intervals with random reference points to absolute time strings if needed)
+
+<h2>Output: </h2>
+
+1. **AmorphousPredictionsFolder**
+It contains all the predictions for all experiments in *AmorphousToPredictFiles* and all models from *AmorphousModels*. The contents are showed on the graph. Each sub-subfolder (model and experiment selected) has four files, the first two .txt files (alphabetically ordered) are the original files. The other one (*PredictedData_{model}_{experiment}.txt*) has the predictions. The png file has the predicitons and the initial and final experimental measurements.
+
+There is a special folder inside **AmorphousPredictionsFolder** with the combined model. It only contains a .txt file with the weighted average of all other prediciton files.
+
+3. **AmorphousExecution_times.txt**
+It records the time it took each individual experiment to be fully predicted. The time depends on the amount of points and model but they are normally not more than 2 seconds long
+
+4. **AmorphousLogFile_PredictingML.txt**
+It is a log with all the important steps that the code has done
+
 
 Here is a diagram of the folder output structure:
         A folder structure with the predictions:
@@ -66,55 +108,11 @@ Here is a diagram of the folder output structure:
           |    |_(...)
           |_(...)
 
-
-
-The inputs of the code are:
-1. The point in the past to start predicting (e.g. if you don't want to start your predictions at the time of the first measurement you can write -123 and the predictions will start 123 seconds before the first experimental measurement). Accepts positive and negative values and I believe even floats (not tested for non-integer values but I don't think it makes sense to ask for time values with a precision smaller than what the files from D3 have)
-2. The time between steps (the time interval between predictions, e.g, if you want predictions every 4 seconds, write as the second input 4).
-3. The point in the future to stop predicting (e.g. if you don't want to stop at the last experimental measurement you can write 1024 and the last polarization will be the last step before t_final+1024). Accepts positive and negative values
-
-
-
-
-___________________________________________________________________________________________
-
- 
-OUTPUTS OF THE CODE (the important ones)
-
-1. **AmorphousLogFile_PredictingML.txt**
-It is a log with all the important steps that the code has done
-
-2. **AbsoluteTimes.txt**
-It is only created if you use Predict (not with PredictWithPolarizationTimeReference). It stores for each experiment (and model, if I have time I will remove those duplications) the name of the experiment, the time where the first polarization measurement was recorded (in an absolute format like "2023-12-08 13:06:39") and the time value that was used for the Predict function (it is just DiffractogramAbsoluteTime that was added so there is a txt file with all the information needed to change from time intervals with random reference points to absolute time strings if needed)
-
-3. **AmorphousExecution_times.txt**
-It records the time it took each individual experiment to be fully predicted. The time depends on the amount of points and model but 48 full predictions with 20 second gaps took less than 90 seconds (hopefully it is fast enough) 
-
-4. **AmorphousPredictionsFolder**
-Stores all the predictions. The first subdivision of folders separate the information using the model
-
-    4.1 **Model\_{Complexity}\_{num\_augmentations}**
-Depending of the model (characterized using two strings) you can obtain predictions for all the experiments. In each Model_{Complexity}_{num_augmentations} folder you will find folders for each experiment
-
-        4.1.1 Experiment_{base_name}
-For each model and {base_name} (or experiment name) you can find one of these folders. The contents contain the predictions
-
-            4.1.1.1 {Complexity}_{num_augmentations}_{base_name}.jpg
-Contains the pure ML predictions in red and the correction (in green) using the first and final polarization measurements. For more information read the explanation of what the code does.
- 
-            4.1.1.2 PredictedData_{Complexity}_{num_augmentations}_{base_name}
-Contains the same information as the green curve but on a txt file. On the first column you have the relative time where t=0 corresponds to the first correct polarization measurement. On the second column you have the absolute time (in a format datetime.strptime("2023-12-08 13:06:39", "%Y-%m-%d %H:%M:%S") ) and on the second and third columns you can find the polarization and uncertainty of polarization associated to those time values
-
-
-
 ___________________________________________________________________________________________
 
 
-Information about the parts
+Information about the functions. Most of them are hollow as this code is just a copy and paste with modifications for predictions.
 
-
-
-Here we have functions that train, validate and fit the models. Some models require the variables to be scaled or will scale them. Extra precautions need to be taken into account
 1. _PrintDebug_ is a flag that allows the code to output on screen all the steps. If it is set to false, it won´t show anything. However, all information will be properly logged whether this flag is set to true or false. The name of the log is determined by the variable *log_file_path*. The code runs faster if it is set to False.
 
 2. _ShowPlot_ is a similar flag that allows the code to show on screen all plots that are being produced. They are all stored independently of whether this flag is True or False. The code runs faster if it is set to False.
