@@ -1,15 +1,10 @@
 # D3MLPolarization
 
-This README IS OUTDATED. THE GOOGLE DRIVE DOCS ARE UP TO DATE.
-Proper explanations that work well with help() in functions is still left. The rest should be done.
-
-
 There are four folders each responsible for a different task. If you just want to obtain the predicted polarization decay you only have to use PredictWithModel. If you want to add measurements (after a reactor cycle) to the data base then you also need to use CreateModels. In case you want to see how well a model performs, use TestAModelFolder. At the end of this README there is a very short summary to use it if you don't need to understand what is happening.
 In this presentation you can see how to use the programs:
 
 [https://docs.google.com/presentation/d/1BqC0SIO63Y6Gf9Ebw5jM6ON_GJMAgEgx/edit?usp=sharing&ouid=103533666238364010404&rtpof=true&sd=true](https://docs.google.com/presentation/d/1ej2dq06_DOG1woB3bfhDSEdd2fq4od1S/edit?usp=sharing&ouid=103533666238364010404&rtpof=true&sd=true)
 
-Apologies for any typos or incorrections in all README files.
 ________________________________________________________________________________
 
 1.D3Files
@@ -27,7 +22,7 @@ This is the code that uses the models that have been created and creates the pre
 	
 It is responsible for preparing the outputs from D3 for the experiments you want to predict. To do it, enter FileReadingStoring and inside the subfolder D3Files paste the "processed" folder you can download from the ILL-DataBase. Normally if you download the "processed" folder from the ILL-DataBase it comes in a zip file that you can just paste inside D3Files. The code files will unzip it and find the correct files and I think it also works with unzipped folders (not tested) so the only thing that needs to be done is to paste your zip file inside D3Files.
 
-Afterwards run either CrystalineFileLecturePredict.ipynb or AmorphousFileLecturePredict.ipynb depending if the experiment uses the Amorphous Substance settings or the Monocrystal/Powder settings. To run it, open them with JupyterLab and launch the only cell present. If you want more information on what the program does and what folders and files it creates, read the README on this folder.
+Afterwards run either CrystalineFileLecturePredict.ipynb or AmorphousFileLecturePredict.ipynb depending if the experiment uses the Amorphous/polycrystalline configuration setting or the Monocrystal/Powder settings. To run it, open them with JupyterLab and launch the only cell present. If you want more information on what the program does and what folders and files it creates, read the README on this folder.
 
 The only real check that needs to be done is to open the folders BadFiles and PlotResults. If there is an experiment in BadFiles please check the LogFiles the .ipynb file produces to see the reason why it was rejected. In PlotResults you should find the experiments that are processed
 
@@ -43,15 +38,17 @@ After using them, a new folder called PredictionsFolder will get created. Inside
 
  === WARNINGS FOR PREDICTWITHMODEL ===
 
-1. IF YOU RUN THE CODE AND YOU GET AN ERROR SAYING THAT SOMETHING IS NOT DEFINED THERE IS A 99% CHANCE THAT THE ISSUE IS THAT YOUR VERSION OF JUPYTERLAB DOESN'T HAVE DOWNLOADED THAT LIBRARY. ADDING A NEW CELL WRITING pip install _________ SHOULD FIX THE ISSUE. HOWEVER ASK CHATGPT FOR THE EXACT LINE pip install ______ THAT YOU NEED TO USE
+1. IF YOU RUN THE CODE AND YOU GET AN ERROR SAYING THAT SOMETHING IS NOT DEFINED THERE IS A 99% CHANCE THAT THE ISSUE IS THAT YOUR VERSION OF JUPYTERLAB HAS NOT DOWNLOADED THAT LIBRARY. ADDING A NEW CELL WRITING pip install _________ SHOULD FIX THE ISSUE. HOWEVER ASK AN AI IF YOU KEEP RUNNING INTO ISSUES FOR THE EXACT LINE pip install ______ THAT YOU NEED TO USE
 
 2. THE FILEREADING.IPYNBs FILES EXPECT THE STRUCTURE OF THE FLI FILES TO BE LIKE THIS FOR CRYSTALS:
 
 polariser cell info ge18004 pressure/init. polar 2.30 0.78 initial date/time 06 06 25 @ 15:15
    59685   0.000   0.000   2.000 06/06/25 16:20:21     228.88  +z +z     0.8460    0.0007   11.9879    0.0558     180.00
+   ...
    60273   0.000   0.000   2.000 10/06/25 15:36:07     170.95  +z +z     0.5454    0.0023    3.3998    0.0215      60.00
 polariser cell info ge18012 pressure/init. polar 2.30 0.78 initial date/time 10 06 25 @ 15:45
    60275   0.000   0.000   2.000 10/06/25 15:47:23     170.14  +z +z     0.8363    0.0011   11.2157    0.0764      60.00
+   ...
    60343   0.000   0.000   2.000 11/06/25 14:30:33     169.83  +z +z     0.8016    0.0021    9.0804    0.1047      60.00
 
 AND THIS FOR AMORPHOUS SUBSTANCES:
@@ -59,10 +56,9 @@ AND THIS FOR AMORPHOUS SUBSTANCES:
 polariser cell info ge18012 pressure/init. polar 3.10 0.77 initial date/time 24 11 23 @ 12:10
 analyser cell info sic1403 pressure/init. polar 2.00 0.77 initial date/time 24 11 23 @ 12:10
    40944   3.000   3.000   3.000 24/11/23 13:09:50       0.00        0.5383    0.0021    3.3319    0.0198     120.00
+   ...
    40976   3.000   3.000   3.000 25/11/23 12:06:27       0.00        0.3985    0.0027    2.3247    0.0146     120.00
 
-
-WE EXPECT THE FLI FILES TO HAVE FOR EACH CHARACTER STRING ONLY TWO NUMERICAL ROWS AND THE MILLER INDICES TO BE THE SAME FOR BOTH ROWS FOR EACH SET OF DATA. If you ever need a more universal code or anything ask, but now this is a requirement.
 
 3. IF YOU EVER USE A NEW TYPE OF CELL (WITH A DIFFERENT CELL ID OR ANALYSER CELL ID) THAN THESE FOR CRYSTALS:
 ge18012
@@ -162,7 +158,6 @@ If you run the third one it will automatically combine the predictions for twelv
 
  === WARNINGS FOR PREDICTWITHMODEL ===
 
-THE IMAGE COMBINATION CELL HAS BEEN CREATED TO EXPECT THE NAMES NAIF, SIMPLE, AVERAGE AND COMPLEX AND FOR THERE TO BE EXACTLY 12 MODELS. IF A DIFFERENT NAME IS USED OR THERE IS A DIFFERENT NUMBER OF MODELS, IT WILL NOT WORK. PLEASE CHANGE THE CODE ACCORDINGLY. 
 THE IMAGE COMBINATION CELL ALSO DOES NOT REMOVE THE TITLE OF EACH GRAPH AND DUE TO THEIR LENGTH THEY OVERLAP. APOLOGIES IN ADVANCE
 _________________________________________________________________________________
 
