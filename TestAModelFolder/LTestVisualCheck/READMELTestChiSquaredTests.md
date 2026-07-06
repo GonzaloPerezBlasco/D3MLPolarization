@@ -1,14 +1,37 @@
-LTestChiSquaredTests.ipynb
+<h1> LTestChiSquaredTests.ipynb </h1>
 
-This code is prepared so that it condenses all the information from the code files inside TestAModelFolder/ML. 
+<h2>Objective of program:</h2>
 
-First copy and paste the folders that CrystallineMLAlone.ipynb and AmorphousMLAlone.ipynb have created inside LTestVisualCheck (at the same level as the ipynb files).
-Then run the first cell of LTestChiSquaredTests.ipynb if you want to obtain information using the chi squared metric. This cell will create a subfolder called ChiSquared where only three files are important:
- - Chi2_rank_vertical.png For every experiment, the chi squared value of the preditions of each model is obtained. Then all chi squared values of the different models in each experiment is compared. The one that has the smaller chi squared value obtains a +1, the second smallest a +2 and so on. This process is repeated for each experiment and these integer values are summed. At the end we can say that the model with the smallest score has performed better overall
- - Chi2_AccumulativeScores.txt has the same information than the graph but on a txt file
- - Chi2_NumberOfExperimentsWhereEachModelOutperforms.txt as its name indicates counts only the number of experiment where each model obtains the smallest chi squared value. Sometimes, models that overfit perform better on this test (as they pass through all the points)
+Takes the tested model folders and compares it using the chi squared metric. It also plots the results. To be precise, for every model (denoted by the subindex $k$ and each experiment (denoted by $i$) it computes the chi squared metric (let $j$ be each individual point in the experiment) $\chi^2_{k,i}=\sum_{j=1}^{N}\frac{(y_j-\sigma_j)^2}{\sigma_j^2}$. Then it compares it using two algorithms.
 
-Run the second folder if you want the same information using a metric similar to the Mean Average Error (MAE). Instead of summing over the differences squared and divided by the uncertainty of the prediction squared, here we are summing over the absolute value of the differences and divided by the uncertainty (not squared). By running this cell you create the subfolder Lvalues that contains the same type of information (Lvalues_rank_vertical.png, Lvalues_TotalScores.txt with the information of the graph and Lvalues_WinnerScores which is the equivalent version of Chi2_NumberOfExperimentsWhereEachModelOutperforms.txt but with The L metric
+The best one is the normalized score:
+It finds, for each experiment, the model with the smallest chi squared and normlizes all values of chi squared for that experiment. Each model then computes the fraction *minimum_chi_squared_of_an_experiment/own_chi_squared_of_an_experiment*. The best model for that experiment gets a 1 while the rest gets smaller numbers. Finally, all these fractions are summed (across all experiments) and the result divided by the number of experiments to "normalize them"
 
-If you run the third one it will automatically combine the predictions for twelve models for each experiment in a single image. This way it is easier to spot the differences between models in a quick look. The code also orders them in order of complexity (each consecutive row has a bigger complexity) and number of augmentations (each consecutive column ahs more augmentation). This way the models are organized from simpler (top left) to more complex (bottom right).
+The other one, the acummulative one, just orders, for each experiment, all chi squared values and depending on their placement, it adds +1,+2,+3,... The higher the number, the worst score. This +1,+2,+3,... get added for all experiments
+
+<h2>Input:</h2>
+
+Manually copy all the folder files that were returned from the notebooks in the folder *ML*. For the amorphous configuration copy the folders like AmorphousAllTestsFolder_Naif_2 and for the crystalline one copy the folders like CrystallineAllTestsFolder_Naif_2. Paste them into the folder *Models_to_be_compared*
+
+<h2>Output: </h2>
+
+It will return everything in the folder *Results*
+
+1. **ExperimentComparison**
+   It is a folder that takes all images produced by *AmorphousMLAlone.ipynb* or *CrystallineMLAlone.ipynb* and combines them into a single image per experiment. That way it is easier to llok at. This folder is produced by running the last cell. If there are a lot of models it will produce very heavy images and take a lot of time.
+
+2. **Chi2_AccumulativeScores.txt**
+    Contains the results of the test where chi squared values are ordered and a +1,+2,+3,... score is given to each model
+
+3. **Chi2_RelativeNormalizedScores.txt**
+    Contains the results of the normalized score test. 
+4. **Chi2_NumberOfExperimentsWhereEachModelOutperforms.txt**
+    Self explanatory
+5. **Chi2_rank_vertical.png**
+    Shows as a histogram graph the results of **Chi2_AccumulativeScores.txt**
+6. **Chi2_relative_vertical.png**
+    Shows as a histogram the results of **Chi2_RelativeNormalizedScores.txt**
+7. **Chi2_values_{experiment_folder_name}.txt**
+    For each model inputted it will create a file where it stores all chi squared values of that model for all experiments
+8. **FullHorizontalChi_ScoreOrdered.png**. Shows the normalized score in a horizontal manner but orders them using the scores, not the names
 
