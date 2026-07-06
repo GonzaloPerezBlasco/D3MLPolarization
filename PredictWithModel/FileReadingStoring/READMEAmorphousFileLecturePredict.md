@@ -1,49 +1,50 @@
 <h1>AmorphousFileLectureCreate.ipynb</h1>
 
-Reads from D3Files all the files it is going to process
+<h2>Objective of program:</h2>
 
-Outputs the following folders and files:
+It takes all polarization files from D3Files and predicts the remaining points from those files. If the file has more than two points (initial and final) it will ignore the intermediate ones. The files created will be processed by this notebook: *PredictWithModel/ML/PredictAmorphous.ipynb*
 
-1. **AmorphousLog_Predicting_Creation.txt**
+<h2>Input:</h2>
+
+It looks in the folder *PredictWithModel/FileReadingStoring/D3Files* for zipped files with .fli files directly downloaded from the ILL Cloud (just download the entire experiment folder, zipped)
+<h2>Output: </h2>
+
+1. **AmorphousBadFiles**
+Contains all the .fli separated in experiment sets folders that were rejected (negative polarizations, etc.)
+
+2. **AmorphousDataBase**
+Contains the extracted .fli files
+
+3. **AmorphousSeparatedFolder**
+Contains the extracted .fli files and the processed files
+
+4. **AmorphousCell_ID.txt**
+    Placeholder txt file
+5.  **AmorphousLog\_Predicting\_Creation.txt**
 Logs all the prints and every step the code does. If you trust the code, it is irrelevant. If you don't trust it or want to change it then this txt file will tell you how each experiment file has been processed and where there might have been issues.
 
-
-2. **Amorphous_CellID**
+6. **AmorphousPolariserAndAnalyser_IDs**
 Contains the Cell IDs found on all the files. Needed for the ML code.
 
+7. **PolarizationTimeReference**
+The models where trained using relative time only. This means that the first valid polarization measurement has been considered as time zero for each experiment and the rest of measurements have their associated time values as a variation of time since that reference. This way all experiments have the same structure. However this reference time is not absolute and the measurements of the diffractograms may have an absolute time reference different from the ones used in the models. By saving the string "Year-Month-Day Hour:Minute:Second" we can safely change the time reference
 
-3. **AmorphousPlotResults**
-This folder will store the graphs of all the experiments that were accepted. Not needed for anything but it is nice to see the files that will be fed to the model. For each experiment you can find the following files:
+8. **PredictWithModel\ML\AmorphousToPredictFiles**
+    Contians the files used for prediction. They are automatically moved to the ML folder
 
-    3.1 **{base_name}_ExtendedArea.png**
-It shows the same pot and also the range $y_{min} = m x + n - 1.3N < y < m x + n + 1.3N < y_{max}$. The points outside the green area will be discarded as they are considered to be too off to be considered correct.
+   8.1 **{base\_name}.txt** 
+Contains DeltaTime (the time of the first VALID polarization measurement), PolarizationD3, SoftPolarizationD3 (the polarization after using a Savitzky-Golay filter) and ErrPolarizationD3 (the uncertainty)
 
+    8.2 **{base\_name}\_Parameters.txt**
+Contains the CellID, Pressure, LabPolarization (the polarization measured at the lab) and LabTimeCellID (the time when it was measured) for both cells (analyser and polariser)
+   
 
-4. **AmorphousMLDataBase**
-Contains the .txt files NECESSARY for the ML algorithm. There are two per experiment
-
-    4.1 **{base_name}.txt** 
-Contains DeltaTime (the time of the measurement measured from the first VALID polarization measurement), PolarizationD3, SoftPolarizationD3 (the polarization after using a Savitzky-Golay filter) and ErrPolarizationD3 (the uncertainty)
-
-    4.2 **{base_name}_Parameters.txt**
-Contains the CellID, Pressure, LabPolarization (the polarization measured at the lab) and LabTimeCellID (the time when it was measured)
-
-5. **AmorphousDataBase**
-Contains all the .fli files that were attempted to be read
-
-
-6. **AmorphousBadFiles**
-Contains all the .fli separated in experiment sets folders that were rejected (not enough points, negative polarizations, etc.)
 
 
 _________________________________________________________________________________________
 
 ## Explanations
 
-Some parts of the code might use data from different sessions. It is safer to erase them and create all files from scratch everytime. This is not a big deal because this code file should only be run once unless the data base changes.
-
-Some experiments did not pass the filtering methods of the previous functions despite looking very promising. Also, some experiments were not adequate yet they passed all of the filtering process. That is why we will store the names of those files manually.
-The code will take all zipped folders from the folder _D3Files_ and prepare them to get their .fli files extracted.
 
 First, it will check if there are duplicate zip folders. To check it it will compare the folder name and the hash sha256. Duplicate folders will be erased. For more information about hash sha256 check for example:
 >Wikipedia contributors. (2026, January 2). SHA-2. In Wikipedia, The Free Encyclopedia. Retrieved 10:49, January 17, 2026, from https://en.wikipedia.org/w/index.php?title=SHA-2&oldid=1330753870
@@ -108,16 +109,6 @@ Temperature did not seem to have an effect on the decay. Therefore, it has been 
 - Plot the succesful experiments
 - Save two files for each experiment. One with the header rows and another one with just the numeric rows (with a new header that explains what each column has)
 
-For every succesful experiment we will output:
-1. Image:  "PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_ExtendedArea.png" in AmorphousPlotResults. Shows the plot with the extended area with the raw data
-2. Txt:    "PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}.txt" in AmorphousMLDataBase. It contains the four data columns (DeltaTime, PolarizationD3, SoftPolarizationD3, ErrPolarizationD3)
-3. Txt:    "PolarizationD3\_{folder\_name}\_{DD}/{MM}/{YY}\_{i}\_MillerIndex\_{PrettyCombination}\_Parameters.txt" in AmorphousMLDataBase. It contains the parameters (CellID, Pressure, LabPolarization, LabTime)
-
-These plots are not necessary but are saved for the user to know what all the files look like.
-The files that are wrong or useless when all is done are the folowing:
-1. Txt:    "{folder\_name}\_Arrays\_{i}.txt" in SeparatedFolder/{folder\_name}. It still has the header and useless columns. It is the fli file of evey chunk, of every recorded experiment (correct or incorrect)
-2. Folder: "BadTest" contains all the graphs of the data sets that were considered not worthy but had more points that the ones saved. Check them if your experiment was not properly added
-
 Finally, it erases all intermediate files and prepares the remaining ones for the ML pipeline
 
 1. Removes all .fli files that have been created.
@@ -127,4 +118,6 @@ Finally, it erases all intermediate files and prepares the remaining ones for th
 As a result, the only useful files are _AmorphousPolariserAndAnalyser\_IDs.txt_ and the folder _\PredictWithModel\ML\AmorphousToPredictFiles_
 
 Finally, it sends the files to the proper folders for the ML algorithm. This part is unique in all "Lecture" files. Clear AmorphousToPredictFiles, then move all files from AmorphousMLDataBase to AmorphousToPredictFiles,
-finally erase AmorphousMLDataBase.
+finally erase AmorphousMLDataBase.  However, the next notebook that needs to run will automatically read them from this folder so **DO NOT MOVE THIS FILE AND FOLDER**. 
+
+<h3>After running this notebook please go to PredictWithModel\ML and run PredictAmorphous.ipynb</h3>
