@@ -1,10 +1,31 @@
 <h1>CreateSaveModelAmorphousML.ipynb</h1> 
 
-This code requires that AmorphousFileLectureCreate.ipynb has been run. If you are confident that the model structures are correct (go to TestAFolder to test the structures) then this code creates the model. It trains on ALL experiments that were processed with AmorphousFileLectureCreate.ipynb 
+<h2>Objective of program:</h2>
 
-__________________________________________________________________________________________
+Trains all requested models for all requested augmentations. The results can be used for the prediction algorithm. 
 
-OUTPUTS OF THE CODE: 
+<h2>Input:</h2>
+
+It looks in the folder *CreateModels/FileReadingStoring/AmorphousMLDataBase* for all valid experiments. 
+
+<h2>Output: </h2>
+
+1. **AmorphousModels**
+For each Complexity and each num_augmentations (a.k.a, for each model structure and data organization) a folder is created.
+
+
+    1.1 **Model\_{Complexity}\_{num\_augmentations}**
+**THESE ARE THE FOLDERS YOU NEED TO COPY AND PASTE INSIDE THE PREDICTING CODE FOLDERS. THE WHOLE FOLDER NOT JUST THE CONTENTS**
+Inside these folders you have the entire model and the scalers all ready to use for prediction. 
+Note: The corrections are dependent on the static parameters and not the model or the training routine. Therefore this models will not give you the corrected predictions. (Do not worry, in the prediction files these corrections are automatically done if you don't change the flag that activates them)
+ 
+       1.1.1 Model_{Complexity}_{num_augmentations}.keras The model file
+
+       1.1.2 scaler_static_{Complexity}_{num_augmentations}_PolarizationD3.pkl. The scaler for the static parameters (initial and final polarizations included) used in this isolated-experiment iteration
+
+       1.1.3 scaler_time_{Complexity}_{num_augmentations}_PolarizationD3.pkl. The scaler for the time evolution used in this isolated-experiment iteration
+
+       1.1.4 scaler_y_{Complexity}_{num_augmentations}.pkl. The scaler for the polarization values used in this isolated-experiment iteration
 
 1. **AmorphousLogFileModelCreation.txt**
 A log file with every step that the algorithm has followed
@@ -14,34 +35,17 @@ A log file with every step that the algorithm has followed
 It times how long the code took to create each model (0.5-1 mins aprox. per model)
 
 
-3. **ModelsAmorphous**
-For each Complexity and each num_augmentations (a.k.a, for each model structure and data organization) a folder is created.
-
-    3.1 **Model\_{Complexity}\_{num\_augmentations}**
-**THESE ARE THE FOLDERS YOU NEED TO COPY AND PASTE INSIDE THE PREDICTING CODE FOLDERS. THE WHOLE FOLDER NOT JUST THE CONTENTS**
-Inside these folders you have the entire model and the scalers all ready to use for prediction. 
-Note: The corrections are dependent on the static parameters and not the model or the training routine. Therefore this models will not give you the corrected predictions. (Do not worry, in the prediction files these corrections are automatically done if you don't change the flag that activates them)
- 
-       3.1.1 Model_{Complexity}_{num_augmentations}.keras The model file
-
-       3.1.2 scaler_static_{Complexity}_{num_augmentations}_PolarizationD3.pkl. The scaler for the static parameters (initial and final polarizations included) used in this isolated-experiment iteration
-
-       3.1.3 scaler_time_{Complexity}_{num_augmentations}_PolarizationD3.pkl. The scaler for the time evolution used in this isolated-experiment iteration
-
-       3.1.4 scaler_y_{Complexity}_{num_augmentations}.pkl. The scaler for the polarization values used in this isolated-experiment iteration
-
-
 __________________________________________________________________________________________
 
 Process:
 
-It takes two lists o
-By changing the lists Names and Augmentations you can pick what model you create. Just write on the two lists your model names and the number of augmentations and it will create models combining them 
+
+By changing the lists Complexitylist and Augmentationlist you can pick what model you create. Just write on the two lists your model names and the number of augmentations and it will create models combining them 
 As an example,
 
-Names = ["ModelA","ModelB","ModelC"]
+Complexitylist = ["ModelA","ModelB","ModelC"]
 
-Augmentations = [5,9,2]
+Augmentationlist = [5,9,2]
 
 will create the models "ModelA_5","ModelB_9" and "ModelC_2"
 
@@ -71,8 +75,8 @@ Another consideration taken here was that the static features get duplicated in 
 and it wouldn't make sense to have different static features. Therefore, the safest approach was to only duplicate these values. For the augmented experiments the only parameters that are changed are the initial and final times and polarizations. There is no incompatibility here to what we have just said as these work as "hypothetical independent experiments". This is why augmentation is done before this function gets used.
          
 
-4. **nll_loss** ML algorythms require a way to tell the algorythm if it is learning or not. The most standard practice is with a Loss function. If the loss value goes down that means that the algorythm is learning and, if a step increases the loss, then it is punished and tries other approaches. When using uncertainties when teaching the model, the most common loss function is the NLL or Negative log-likelihood of a normal distribution 
-NLL$=\frac{1}{2}$log$(σ^2)+\frac{(y−μ)^2}{2σ^2}$
+4. **nll_loss** ML algorythms require a way to tell the algorythm if it is learning or not. The most standard practice is with a Loss function. If the loss value goes down that means that the algorythm is learning and, if a step increases the loss, then it is punished and tries other approaches. When using uncertainties when teaching the model, the most common loss function is the $NLL$ or Negative log-likelihood of a normal distribution 
+$NLL=\frac{1}{2}$log$(σ^2)+\frac{(y−μ)^2}{2σ^2}$
 where $\sigma$ is the uncertainty in the predictions, $y$ is the measured value and $\mu$ the predicted value. Instead of predicting $σ^2$ directly, we obtain its logarithm to have a more stable process (and avoid accounting precision as $\sigma^{-2}$ which is numerically unstable when uncertainties are low).
 
 However we want to avoid uncertainties that drift too far from the overall model predictions. To achieve that, we can get a rough estimate on what the uncertainty of a set predictions looks like.
@@ -81,7 +85,7 @@ $Var(\vec{\mu})=\frac{1}{N}\sum_{i=1}^N\left(\mu_i-E(\vec{\mu})\right)$
 where $E(\vec{\mu})$ is the mean of the predicted values. We then have two different variances, one obtained as the sparseness of the predictions, (denoted as $Var\left(\vec{\mu}\right)$, and one obtained as a result of the internal ML calculations (denoted as $\sigma^2$). A penalty can be added to the loss functions to force the model to try to reduce this differences. An easy way to model it is to obtain the difference of those variances and square the result (taking the absolute value was also a good estimate, but using squared values punished big discrepancies in a stronger way).
 
 $StrayPenalty = B \cdot \left[\log\left(\sigma^2\right)-\log\left(\mathrm{Var}\left(\vec{\mu}\right)\right)\right]^2$
-where $B$ is a constant used to control the weight of this penalty. The reason why $Var\left(\vec{\mu}\right)$ was used and not $Var\left(\vec{y}\right)$ (with $\vec{y}$ the vector of measured values) was to avoid noise in the original data to tamper with the loss function. It would be physically clearer to use measured values sparseness as a way to guide the model but some experimental uncertainties are clearly underestimated and that would cause this penalty to dominate the loss and obscure the main loss protocol, the NLL.
+where $B$ is a constant used to control the weight of this penalty. The reason why $Var\left(\vec{\mu}\right)$ was used and not $Var\left(\vec{y}\right)$ (with $\vec{y}$ the vector of measured values) was to avoid noise in the original data to tamper with the loss function. It would be physically clearer to use measured values sparseness as a way to guide the model but some experimental uncertainties are clearly underestimated and that would cause this penalty to dominate the loss and obscure the main loss protocol, the $NLL$.
 
 Also, we also want to punish the model if it tries overestimating $\sigma$. If the model is unable to minimize $y-\mu$, in order to lower NLL, it increases $\sigma$. If no precautions are taken, this "escape solution" achieves bad predictions with inflated uncertainties that simulate a low loss value. A new penalty was added that punishes overestimation of the uncertainties more than underestimation (which never happened). The slope correction done further on the pipeline can "fix" this issue but what the model returns then is closer to a poorly calculated linear fit
 Therefore, an addition penalty was added.
