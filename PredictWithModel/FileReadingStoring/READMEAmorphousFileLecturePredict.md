@@ -1,4 +1,4 @@
-<h1>AmorphousFileLectureCreate.ipynb</h1>
+<h1>AmorphousFileLecturePredict.ipynb</h1>
 
 <h2>Objective of program:</h2>
 
