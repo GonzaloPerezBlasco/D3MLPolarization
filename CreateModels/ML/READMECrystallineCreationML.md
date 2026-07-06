@@ -1,46 +1,51 @@
 <h1>CreateSaveModelCrystallineML.ipynb</h1> 
 
-This code requires that CrystallineFileLectureCreate.ipynb has been run. If you are confident that the model structures are correct (go to TestAFolder to test the structures) then this code creates the model. It trains on ALL experiments that were processed with CrystallineFileLectureCreate.ipynb 
+<h2>Objective of program:</h2>
 
-__________________________________________________________________________________________
+Trains all requested models for all requested augmentations. The results can be used for the prediction algorithm. 
 
-OUTPUTS OF THE CODE: 
+<h2>Input:</h2>
 
-1. **CrystallineLogFileModelCreation.txt**
+It looks in the folder *CreateModels/FileReadingStoring/CrystallineMLDataBase* for all valid experiments. 
+
+<h2>Output: </h2>
+
+1. **CrystallineModels**
+For each Complexity and each num_augmentations (a.k.a, for each model structure and data organization) a folder is created.
+
+
+    1.1 **Model\_{Complexity}\_{num\_augmentations}**
+**THESE ARE THE FOLDERS YOU NEED TO COPY AND PASTE INSIDE THE PREDICTING CODE FOLDERS. THE WHOLE FOLDER NOT JUST THE CONTENTS**
+Inside these folders you have the entire model and the scalers all ready to use for prediction. 
+Note: The corrections are dependent on the static parameters and not the model or the training routine. Therefore this models will not give you the corrected predictions. (Do not worry, in the prediction files these corrections are automatically done if you don't change the flag that activates them)
+ 
+       1.1.1 Model_{Complexity}_{num_augmentations}.keras The model file
+
+       1.1.2 scaler_static_{Complexity}_{num_augmentations}_PolarizationD3.pkl. The scaler for the static parameters (initial and final polarizations included) used in this isolated-experiment iteration
+
+       1.1.3 scaler_time_{Complexity}_{num_augmentations}_PolarizationD3.pkl. The scaler for the time evolution used in this isolated-experiment iteration
+
+       1.1.4 scaler_y_{Complexity}_{num_augmentations}.pkl. The scaler for the polarization values used in this isolated-experiment iteration
+
+2. **CrystallineLogFileModelCreation.txt**
 A log file with every step that the algorithm has followed
 
 
-2. **CrystallineExecution\_times.txt**
+3. **CrystallineExecution\_times.txt**
 It times how long the code took to create each model (1/2->1 minutes aproximately per model)
-
-
-3. **ModelsCrystalline**
-For each Complexity and each num_augmentations (a.k.a, for each model structure and data organization) a folder is created.
-
-    3.1 **Model\_{Complexity}\_{num\_augmentations}** **THESE ARE THE FOLDERS YOU NEED TO COPY AND PASTE INSIDE THE PREDICTING CODE FOLDERS. THE WHOLE FOLDER NOT JUST THE CONTENTS**
-Inside these folders you have the entire model and the scalers all ready to use for prediction. 
-Note: The corrections are dependent on the static parameters and not the model or the training routine. Therefore these models will not give you the corrected predictions. (Do not worry, in the prediction files these corrections are automatically done if you don't change the flag that activates them)
- 
-        3.1.1 Model_{Complexity}_{num_augmentations}.keras The model file
-
-        3.1.2 scaler_static_{Complexity}_{num_augmentations}_PolarizationD3.pkl The scaler for the static parameters (initial and final polarizations included) used in this isolated-experiment iteration)
-
-        3.1.3 scaler_time_{Complexity}_{num_augmentations}_PolarizationD3.pkl The scaler for the time evolution used in this isolated-experiment iteration
-
-        3.1.4 scaler_y_{Complexity}_{num_augmentations}.pkl The scaler for the polarization values used in this isolated-experiment iteration
 
 
 __________________________________________________________________________________________
 
+
 Process:
 
-It takes two lists o
-By changing the lists Names and Augmentations you can pick what model you create. Just write on the two lists your model names and the number of augmentations and it will create models combining them 
+By changing the lists Complexitylist and Augmentationlist you can pick what model you create. Just write on the two lists your model names and the number of augmentations and it will create models combining them 
 As an example,
 
-Names = ["ModelA","ModelB","ModelC"]
+Complexitylist = ["ModelA","ModelB","ModelC"]
 
-Augmentations = [5,9,2]
+Augmentationlist = [5,9,2]
 
 will create the models "ModelA_5","ModelB_9" and "ModelC_2"
 
