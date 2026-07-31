@@ -1,9 +1,9 @@
 # D3MLPolarization
 
 **LINK TO THE PUBLISHED PAPER:**
-The software is designed to function as a black-box tool for routine use on D3. In standard operation, users require only the predicted polarization decay for data correction and do not need to interact with the internal ML architecture. The prediction module can therefore be executed independently. For advanced applications, such as testing alternative model architectures or defining new ones, dedicated testing and model-creation modules are provided in the repository \cite{MLmodel}.
+The software is designed to function as a black-box tool for routine use on D3. In standard operation, users require only the predicted polarization decay for data correction and do not need to interact with the internal ML architecture. The prediction module can therefore be executed independently. For advanced applications, such as testing alternative model architectures or defining new ones, dedicated testing and model-creation modules are provided in the repository.
 
-The procedure described at the methodology section of the paper is implemented as the testing module (left column), which evaluates combinations of model architectures and dataset augmentations. Specifically, Subsection about datasets corresponds to the \texttt{TestPreprocess} routine; Subsections Models and Renormalization are implemented in \texttt{TestML}; and Subsection Ranking is realized through the \texttt{Ranking} routine.
+The procedure described at the methodology section of the paper is implemented as the testing module (left column), which evaluates combinations of model architectures and dataset augmentations. Specifically, Subsection about datasets corresponds to the *TestPreprocess* routine; Subsections Models and Renormalization are implemented in *TestML*; and Subsection Ranking is realized through the *Ranking* routine.
 
 After selecting the optimal model set, the creation module (center column) retrains the chosen architectures for deployment. This stage follows the same pre-processing and training steps as the testing module, except that LOOCV is not applied. All available datasets are used for training without isolating individual experiments.
 
